@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const token = localStorage.getItem("token");
 
-  // If not logged in
   if (!token) {
     window.location.href = "login.html";
     return;
@@ -39,8 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      container.innerHTML = data.message || 
-        "❌ Error loading matches. Please try again.";
+      container.innerHTML = data.message || "❌ Error loading matches.";
       return;
     }
 
@@ -60,8 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       card.innerHTML = `
         <h3>${match.game || match.matchId || "Match"}</h3>
-
-        <p><strong>Status:</strong> ${reg.status}</p>
+        <p><strong>Status:</strong> ${reg.status || "pending"}</p>
         <p>📅 ${reg.matchDate || "Date not announced"}</p>
         <p>⏰ ${reg.matchTime || "Time not announced"}</p>
         <p><strong>Room ID:</strong> ${reg.roomID || "Not assigned yet"}</p>
@@ -73,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   } catch (error) {
     console.error("Dashboard error:", error);
-    container.innerHTML = "<p>❌ Error loading matches. Please try again.</p>";
+    container.innerHTML = "<p>❌ Error loading matches. Try again.</p>";
   }
 
 });
