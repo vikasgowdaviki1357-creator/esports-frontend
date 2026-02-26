@@ -5,21 +5,53 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="login-page">
-  <div class="login-overlay">
-    <div class="login-panel">
+
+<div class="login-overlay">
+  <div class="login-panel">
       <h2>Admin Login</h2>
 
       <input type="email" id="admin-email" placeholder="Admin Email">
       <input type="password" id="admin-password" placeholder="Password">
 
       <button class="login-btn" onclick="adminLogin()">LOGIN AS ADMIN</button>
-    </div>
   </div>
+</div>
 
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="auth.js"></script>
+<script>
+async function adminLogin() {
+  const email = document.getElementById("admin-email").value;
+  const password = document.getElementById("admin-password").value;
+
+  try {
+    const res = await fetch("https://esports-backend-2n67.onrender.com/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    if (data.user.role !== "admin") {
+      alert("Not an admin account");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    alert("Admin login successful");
+    window.location.href = "admin-dashboard.html";
+
+  } catch (err) {
+    alert("Server error");
+  }
+}
+</script>
+
 </body>
 </html>
-
-
-
