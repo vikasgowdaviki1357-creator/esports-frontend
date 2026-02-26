@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Admin Dashboard – Approve Squads</h2>
+
+<div id="admin-list"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+
+  if (!token || !user || user.role !== "admin") {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const list = document.getElementById("admin-list");
+
+  try {
+    const res = await fetch("/api/admin/registrations", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    list.innerHTML = "";
+
+    if (!data.length) {
+      list.innerHTML = "<p>No registrations yet</p>";
+      return;
+    }
+
+    data.forEach(reg => {
+
+      list.innerHTML += `
+        <div style="margin-bottom:25px;padding:20px;border:1px solid #333;border-radius:12px">
+
+          <h3>Match ID: ${reg.match}</h3>
+
+          <p><b>Player Name:</b> ${reg.player?.name || "N/A"}</p>
+          <p><b>Email:</b> ${reg.player?.email || "N/A"}</p>
+
+          <p><b>Team Leader:</b> ${reg.teamName || "N/A"}</p>
+
+          <p><b>Player 1 ID:</b> ${reg.squadIds?.[0] || "N/A"}</p>
+          <p><b>Player 2 ID:</b> ${reg.squadIds?.[1] || "N/A"}</p>
+          <p><b>Player 3 ID:</b> ${reg.squadIds?.[2] || "N/A"}</p>
+          <p><b>Player 4 ID:</b> ${reg.squadIds?.[3] || "N/A"}</p>
+
+          <p><b>Phone:</b> ${reg.phone || "N/A"}</p>
+          <p><b>UPI:</b> ${reg.playerUpi || "N/A"}</p>
+
+          <p><b>Status:</b> ${reg.status || "pending"}</p>
+
+          ${
+            reg.screenshot
+              ? `<img src="${reg.screenshot}" width="220" style="margin:10px 0;border-radius:8px"/>`
+              : `<p>No Screenshot</p>`
+          }
+
+          ${
+            (reg.status || "pending") === "pending"
+            ? `
+              <hr>
+              <input placeholder="Match Date" id="date-${reg._id}">
+              <input placeholder="Match Time" id="time-${reg._id}">
+              <input placeholder="Room ID" id="rid-${reg._id}">
+              <input placeholder="Room Password" id="rp-${reg._id}">
+              <button onclick="approve('${reg._id}')">Approve</button>
+            `
+            : `
+              <hr>
+              <p>📅 <b>Date:</b> ${reg.matchDate || ""}</p>
+              <p>⏰ <b>Time:</b> ${reg.matchTime || ""}</p>
+              <p><b>Room ID:</b> ${reg.roomID || ""}</p>
+              <p><b>Password:</b> ${reg.roomPassword || ""}</p>
+            `
+          }
+
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = "<p>Error loading registrations</p>";
+  }
+
+});
+
+async function approve(id) {
+
+  const token = localStorage.getItem("token");
+
+  const matchDate = document.getElementById("date-" + id).value.trim();
+  const matchTime = document.getElementById("time-" + id).value.trim();
+  const roomId = document.getElementById("rid-" + id).value.trim();
+  const roomPassword = document.getElementById("rp-" + id).value.trim();
+
+  if (!matchDate || !matchTime || !roomId || !roomPassword) {
+    alert("Fill all match details");
+    return;
+  }
+
+  await fetch("/api/admin/approve/" + id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({
+      matchDate,
+      matchTime,
+      roomId,
+      roomPassword
+    })
+  });
+
+  alert("Approved successfully");
+  location.reload();
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+</script>
+
+<button onclick="logout()">Logout</button>
+
+</body>
+</html>

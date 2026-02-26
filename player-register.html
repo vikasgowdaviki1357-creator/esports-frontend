@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register Tournament</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h2>🎮 FREE FIRE SQUAD Registration</h2>
+
+<div class="form-container">
+
+  <input id="matchId" placeholder="Match ID (e.g. 1001)" required>
+
+  <input id="teamName" placeholder="Team Leader Name" required>
+
+  <input id="player1Id" placeholder="Player 1 In-Game ID" required>
+  <input id="player2Id" placeholder="Player 2 In-Game ID" required>
+  <input id="player3Id" placeholder="Player 3 In-Game ID" required>
+  <input id="player4Id" placeholder="Player 4 In-Game ID" required>
+
+  <input id="phone" placeholder="Phone Number" required>
+  <input id="playerUpi" placeholder="UPI ID (for winnings)" required>
+  
+  <button onclick="register()">REGISTER</button>
+
+</div>
+
+<script>
+async function register() {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const matchId = document.getElementById("matchId").value.trim();
+  const teamName = document.getElementById("teamName").value.trim();
+  const player1Id = document.getElementById("player1Id").value.trim();
+  const player2Id = document.getElementById("player2Id").value.trim();
+  const player3Id = document.getElementById("player3Id").value.trim();
+  const player4Id = document.getElementById("player4Id").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const playerUpi = document.getElementById("playerUpi").value.trim();
+
+  if (!matchId || !teamName || !player1Id || !player2Id || !player3Id || !player4Id || !phone || !playerUpi) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  try {
+
+    const res = await fetch("/api/join-match", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        matchId,
+        teamName,
+        squadIds: [player1Id, player2Id, player3Id, player4Id],
+        phone,
+        playerUpi
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Registration failed");
+      return;
+    }
+
+    alert("Squad registered successfully. Waiting for admin approval.");
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Try again.");
+  }
+}
+</script>
+
+</body>
+</html>

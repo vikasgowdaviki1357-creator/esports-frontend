@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-page">
+
+<div class="login-overlay">
+  <div class="login-panel">
+
+    <h2>Create Account</h2>
+
+    <form id="signup-form">
+
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+
+      <button type="submit" class="login-btn">SIGN UP</button>
+
+    </form>
+
+    <p class="switch">
+      Already have an account?
+      <a href="login.html">Login</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+document.getElementById("signup-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+
+  try {
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: email.split("@")[0],
+        email,
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    if (res.ok) {
+      window.location.href = "login.html";
+    }
+
+  } catch (err) {
+    alert("Signup error: " + err.message);
+  }
+});
+</script>
+
+</body>
+</html>

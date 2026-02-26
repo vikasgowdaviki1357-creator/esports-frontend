@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<h2>🔥 My Tournament Status</h2>
+
+<div id="matches"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const token = localStorage.getItem("token");
+
+  // If not logged in
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const container = document.getElementById("matches");
+  container.innerHTML = "<p>Loading your matches...</p>";
+
+  try {
+
+    const response = await fetch("/api/my-registrations", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch registrations");
+    }
+
+    const data = await response.json();
+
+    container.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No matches joined yet.</p>";
+      return;
+    }
+
+    data.forEach(reg => {
+
+      const match = reg.match || {};
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <h3>${match.game || "Match"}</h3>
+        <p><strong>Status:</strong> ${reg.status || "pending"}</p>
+        <p>📅 ${reg.matchDate || "Date not announced"}</p>
+        <p>⏰ ${reg.matchTime || "Time not announced"}</p>
+        <p><strong>Room ID:</strong> ${reg.roomID || "Not assigned yet"}</p>
+        <p><strong>Password:</strong> ${reg.roomPassword || "Not assigned yet"}</p>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    container.innerHTML = "<p>Error loading matches. Please try again.</p>";
+  }
+
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "login.html";
+  }
+});
+</script>
+
+</body>
+</html>

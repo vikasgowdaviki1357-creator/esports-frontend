@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FREE FIRE Registration — RV Esports Arena</title>
+
+<style>
+body{
+  margin:0;
+  background:#050607;
+  color:#fff;
+  font-family:Inter, sans-serif;
+}
+.hero{
+  min-height:60vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:url("images/vikas.jpg") center/cover no-repeat;
+  position:relative;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.85));
+}
+.hero-inner{
+  position:relative;
+  z-index:2;
+  display:flex;
+  gap:30px;
+  width:90%;
+  max-width:1100px;
+}
+.panel{
+  width:360px;
+  background:#0b0b14;
+  padding:22px;
+  border-radius:16px;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid #333;
+  background:#0b0b14;
+  color:white;
+}
+.btn{
+  background:#ff2e6d;
+  border:none;
+  padding:12px;
+  width:100%;
+  border-radius:24px;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
+.msg{
+  font-size:13px;
+  color:#9fffe3;
+  margin-top:6px;
+}
+.info-box{
+  margin-bottom:15px;
+  padding:12px;
+  border-radius:10px;
+  background:#0f1518;
+  font-size:14px;
+}
+.slot-box{
+  margin-bottom:12px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <h2>Join & Win Esports Tournaments</h2>
+      <p>FREE FIRE • BGMI</p>
+    </div>
+
+    <aside class="panel">
+      <h3>FREE FIRE — Squad Registration</h3>
+
+      <div class="info-box">
+        <p><b>Match Type:</b> Bermuda</p>
+        <p><b>Entry Fee:</b> ₹60 / Squad</p>
+        <p><b>Total Teams:</b> 12</p>
+        <p style="color:#9fffe3;font-weight:bold">🏆1st Winner Gets: ₹200</p>
+        <p style="color:#9fffe3;font-weight:bold">🏆2nd Winner Gets: ₹150</p>
+        <p style="color:#9fffe3;font-weight:bold">🏆3rd Winner Gets: ₹100</p>
+      </div>
+
+      <!-- ✅ LIVE SLOT DISPLAY -->
+      <div id="slotInfo" class="slot-box"></div>
+
+      <form id="regForm">
+
+        <input id="name" placeholder="Team Name" required>
+        <input id="player1Id" placeholder="Player 1 In-Game ID" required>
+        <input id="player2Id" placeholder="Player 2 In-Game ID" required>
+        <input id="player3Id" placeholder="Player 3 In-Game ID" required>
+        <input id="player4Id" placeholder="Player 4 In-Game ID" required>
+
+        <input id="phone" placeholder="Phone number" required>
+        <input id="playerUpi" placeholder="Your UPI ID (for winnings)" required>
+
+        <p style="font-size:13px;color:#ccc;margin:10px 0">
+          Pay ₹60 to UPI: <strong>rk23sd@oksbi</strong>
+        </p>
+
+        <input id="screenshot" type="file" accept="image/*" required>
+
+        <button id="submitBtn" class="btn" type="submit">
+          Submit Registration
+        </button>
+
+        <div id="status" class="msg"></div>
+      </form>
+    </aside>
+  </div>
+</section>
+
+<script>
+
+// FIXED MATCH ID
+const matchId = "FF-SQUAD-1";
+
+/* ===============================
+   LOAD REMAINING SLOTS
+================================ */
+async function loadSlots() {
+
+  try {
+    const res = await fetch("/api/match-slots/" + matchId);
+    const data = await res.json();
+
+    const slotInfo = document.getElementById("slotInfo");
+    const submitBtn = document.getElementById("submitBtn");
+
+    slotInfo.innerHTML =
+      `🔥 Slots Filled: ${data.registered}/${data.total} | Remaining: ${data.remaining}`;
+
+    if (data.remaining <= 0) {
+      slotInfo.innerHTML += " ❌ REGISTRATION CLOSED";
+      slotInfo.style.color = "red";
+      submitBtn.disabled = true;
+    } else if (data.remaining <= 3) {
+      slotInfo.style.color = "orange";
+      submitBtn.disabled = false;
+    } else {
+      slotInfo.style.color = "#9fffe3";
+      submitBtn.disabled = false;
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadSlots);
+setInterval(loadSlots, 5000);
+
+
+/* ===============================
+   SUBMIT REGISTRATION
+================================ */
+document.getElementById("regForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const teamName = document.getElementById("name").value.trim();
+  const player1Id = document.getElementById("player1Id").value.trim();
+  const player2Id = document.getElementById("player2Id").value.trim();
+  const player3Id = document.getElementById("player3Id").value.trim();
+  const player4Id = document.getElementById("player4Id").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const playerUpi = document.getElementById("playerUpi").value.trim();
+  const screenshotFile = document.getElementById("screenshot").files[0];
+
+  if (!teamName || !player1Id || !player2Id || !player3Id || !player4Id || !phone || !playerUpi || !screenshotFile) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.readAsDataURL(screenshotFile);
+
+  reader.onload = async function () {
+
+    try {
+
+      const res = await fetch("/api/join-match", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+          matchId,
+          teamName,
+          squadIds: [player1Id, player2Id, player3Id, player4Id],
+          phone,
+          playerUpi,
+          screenshot: reader.result
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      alert("Registration submitted successfully!");
+      window.location.href = "player-dashboard.html";
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
+});
+
+</script>
+</body>
+</html>

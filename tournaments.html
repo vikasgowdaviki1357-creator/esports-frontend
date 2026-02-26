@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Tournaments - RV Esports Arena</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav-row">
+    <h1 class="logo">RV Esports Arena</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="tournaments.html" class="active">Tournaments</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container page tournaments-page">
+  <section class="intro">
+    <h2 class="page-title">Available Tournaments</h2>
+    <p class="subtitle">
+      Only <strong>FREE FIRE</strong> and <strong>BGMI</strong> tournaments are shown here.
+    </p>
+  </section>
+
+  <section id="tournaments-wrap">
+    <div id="tournaments-list" class="grid"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">© RV Esports Arena</div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ===============================
+  // AUTH CHECK
+  // ===============================
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  // ===============================
+  // STATIC TOURNAMENT DATA
+  // ===============================
+  const tournaments = [
+    {
+      id: 'freefire-squad-1',
+      game: 'FREEFIRE',
+      title: 'Free Fire Clash - Squad',
+      date: '2025-12-18',
+      entry: 100,
+      slots: 4,
+      register: 'freefire-register.html'
+    },
+    {
+      id: 'bgmi-duo-1',
+      game: 'BGMI',
+      title: 'BGMI Battlegrounds - Duo',
+      date: '2025-12-20',
+      entry: 60,
+      slots: 100,
+      register: 'bgmi-register.html'
+    }
+  ];
+
+  const gameIcons = {
+    'FREEFIRE': 'images/freefire.png',
+    'BGMI': 'images/bgmi.jpeg'
+  };
+
+  const container = document.getElementById("tournaments-list");
+
+  // ===============================
+  // CREATE CARD
+  // ===============================
+  function createCard(t) {
+
+    const card = document.createElement("article");
+    card.className = "card tournament-card";
+
+    const icon = gameIcons[t.game] || "images/default.png";
+
+    card.innerHTML = `
+      <div class="card-top">
+        <img class="game-icon" src="${icon}" alt="${t.game} logo" loading="lazy">
+        <div class="title-wrap">
+          <h3 class="t-title">${t.title}</h3>
+          <span class="badge">${t.game}</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <p class="meta"><strong>${t.date}</strong> • ₹${t.entry}</p>
+        <p class="slots">Slots: ${t.slots} • Mode: Online</p>
+      </div>
+
+      <div class="card-actions">
+        <a class="btn-primary" href="${t.register}">Register</a>
+        <button class="btn-outline info-btn">More Info</button>
+      </div>
+    `;
+
+    // More Info Click
+    card.querySelector(".info-btn").addEventListener("click", () => {
+      alert(
+        `${t.title}\n\n` +
+        `Game: ${t.game}\n` +
+        `Date: ${t.date}\n` +
+        `Entry Fee: ₹${t.entry}\n` +
+        `Total Slots: ${t.slots}\n` +
+        `Mode: Online`
+      );
+    });
+
+    return card;
+  }
+
+  // ===============================
+  // RENDER TOURNAMENTS
+  // ===============================
+  function renderTournaments() {
+    container.innerHTML = "";
+    tournaments.forEach(t => {
+      container.appendChild(createCard(t));
+    });
+  }
+
+  renderTournaments();
+
+});
+</script>
+
+</body>
+</html>

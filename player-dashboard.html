@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Tournament Status</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>🔥 My Tournament Status</h2>
+<div id="status"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const container = document.getElementById("status");
+  container.innerHTML = "<p>Loading...</p>";
+
+  try {
+
+    const res = await fetch("/api/my-registrations", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to load data");
+    }
+
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No tournament registrations</p>";
+      return;
+    }
+
+    data.forEach(r => {
+
+      const match = r.match || {};
+
+      container.innerHTML += `
+        <div class="card">
+          <h3>${match.game || "Match"}</h3>
+          <p><strong>Status:</strong> ${r.status}</p>
+          <p>📅 ${r.matchDate || "Date not announced"}</p>
+          <p>⏰ ${r.matchTime || "Time not announced"}</p>
+          <p><strong>Room ID:</strong> ${r.roomID || "Not assigned yet"}</p>
+          <p><strong>Password:</strong> ${r.roomPassword || "Not assigned yet"}</p>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Error loading tournament status</p>";
+  }
+
+});
+</script>
+
+</body>
+</html>

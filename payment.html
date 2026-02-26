@@ -1,0 +1,41 @@
+<script type="module">
+import { db, storage, collection, getDocs, ref, uploadBytes, getDownloadURL, updateDoc, doc } from "./firebase.js";
+
+window.submitProof = async function () {
+  const file = document.getElementById("ss").files[0];
+
+  if (!file) {
+    alert("Please upload a screenshot!");
+    return;
+  }
+
+  // 1️⃣ Fetch the last registration (the one just created)
+  const snap = await getDocs(collection(db, "registrations"));
+  let lastDoc = null;
+
+  snap.forEach(d => lastDoc = d);
+
+  if (!lastDoc) {
+    alert("No registration found!");
+    return;
+  }
+
+  // 2️⃣ Upload screenshot to Firebase Storage
+  const storageRef = ref(storage, `payments/${lastDoc.id}.jpg`);
+  await uploadBytes(storageRef, file);
+
+  const url = await getDownloadURL(storageRef);
+
+  // 3️⃣ Update Firestore entry
+  await updateDoc(doc(db, "registrations", lastDoc.id), {
+    screenshot: url,
+    payment: "submitted"
+  });
+
+  alert("Screenshot Uploaded Successfully!");
+  window.location.href = "dashboard.html";
+}
+</script>
+
+
+
