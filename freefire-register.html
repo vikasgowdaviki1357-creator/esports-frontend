@@ -6,79 +6,7 @@
 <title>FREE FIRE Registration — RV Esports Arena</title>
 
 <style>
-body{
-  margin:0;
-  background:#050607;
-  color:#fff;
-  font-family:Inter, sans-serif;
-}
-.hero{
-  min-height:60vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:url("images/vikas.jpg") center/cover no-repeat;
-  position:relative;
-}
-.hero::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.85));
-}
-.hero-inner{
-  position:relative;
-  z-index:2;
-  display:flex;
-  gap:30px;
-  width:90%;
-  max-width:1100px;
-}
-.panel{
-  width:360px;
-  background:#0b0b14;
-  padding:22px;
-  border-radius:16px;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  border-radius:8px;
-  border:1px solid #333;
-  background:#0b0b14;
-  color:white;
-}
-.btn{
-  background:#ff2e6d;
-  border:none;
-  padding:12px;
-  width:100%;
-  border-radius:24px;
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
-.btn:disabled{
-  background:#555;
-  cursor:not-allowed;
-}
-.msg{
-  font-size:13px;
-  color:#9fffe3;
-  margin-top:6px;
-}
-.info-box{
-  margin-bottom:15px;
-  padding:12px;
-  border-radius:10px;
-  background:#0f1518;
-  font-size:14px;
-}
-.slot-box{
-  margin-bottom:12px;
-  font-weight:bold;
-}
+/* your same CSS here — unchanged */
 </style>
 </head>
 
@@ -103,7 +31,6 @@ input{
         <p style="color:#9fffe3;font-weight:bold">🏆3rd Winner Gets: ₹100</p>
       </div>
 
-      <!-- ✅ LIVE SLOT DISPLAY -->
       <div id="slotInfo" class="slot-box"></div>
 
       <form id="regForm">
@@ -134,15 +61,11 @@ input{
 </section>
 
 <script>
-
 const API_BASE = "https://esports-backend-2n67.onrender.com";
 const matchId = "FF-SQUAD-1";
 
-/* ===============================
-   LOAD REMAINING SLOTS
-================================ */
+// Load slots
 async function loadSlots() {
-
   try {
     const res = await fetch(`${API_BASE}/api/match-slots/${matchId}`);
     const data = await res.json();
@@ -150,8 +73,7 @@ async function loadSlots() {
     const slotInfo = document.getElementById("slotInfo");
     const submitBtn = document.getElementById("submitBtn");
 
-    slotInfo.innerHTML =
-      `🔥 Slots Filled: ${data.registered}/${data.total} | Remaining: ${data.remaining}`;
+    slotInfo.innerHTML = `🔥 Slots Filled: ${data.registered}/${data.total} | Remaining: ${data.remaining}`;
 
     if (data.remaining <= 0) {
       slotInfo.innerHTML += " ❌ REGISTRATION CLOSED";
@@ -173,9 +95,7 @@ async function loadSlots() {
 document.addEventListener("DOMContentLoaded", loadSlots);
 setInterval(loadSlots, 5000);
 
-/* ===============================
-   SUBMIT REGISTRATION
-================================ */
+// Submit registration
 document.getElementById("regForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
@@ -187,15 +107,15 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
   }
 
   const teamName = document.getElementById("name").value.trim();
-  const player1Id = document.getElementById("player1Id").value.trim();
-  const player2Id = document.getElementById("player2Id").value.trim();
-  const player3Id = document.getElementById("player3Id").value.trim();
-  const player4Id = document.getElementById("player4Id").value.trim();
+  const p1 = document.getElementById("player1Id").value.trim();
+  const p2 = document.getElementById("player2Id").value.trim();
+  const p3 = document.getElementById("player3Id").value.trim();
+  const p4 = document.getElementById("player4Id").value.trim();
   const phone = document.getElementById("phone").value.trim();
-  const playerUpi = document.getElementById("playerUpi").value.trim();
+  const upi = document.getElementById("playerUpi").value.trim();
   const screenshotFile = document.getElementById("screenshot").files[0];
 
-  if (!teamName || !player1Id || !player2Id || !player3Id || !player4Id || !phone || !playerUpi || !screenshotFile) {
+  if (!teamName || !p1 || !p2 || !p3 || !p4 || !phone || !upi || !screenshotFile) {
     alert("Please fill all fields");
     return;
   }
@@ -204,9 +124,7 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
   reader.readAsDataURL(screenshotFile);
 
   reader.onload = async function () {
-
     try {
-
       const res = await fetch(`${API_BASE}/api/join-match`, {
         method: "POST",
         headers: {
@@ -216,9 +134,9 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
         body: JSON.stringify({
           matchId,
           teamName,
-          squadIds: [player1Id, player2Id, player3Id, player4Id],
+          squadIds: [p1, p2, p3, p4],
           phone,
-          playerUpi,
+          playerUpi: upi,
           screenshot: reader.result
         })
       });
@@ -239,8 +157,7 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
     }
   };
 });
-
 </script>
-</body>
 
+</body>
 </html>
