@@ -12,16 +12,14 @@ form.addEventListener("submit", async (e) => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        email,
-        password
-      })
+      body: JSON.stringify({ email, password })
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      return alert(data.message);
+      alert(data.message);
+      return;
     }
 
     localStorage.setItem("token", data.token);
