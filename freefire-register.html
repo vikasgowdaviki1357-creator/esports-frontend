@@ -135,7 +135,7 @@ input{
 
 <script>
 
-// FIXED MATCH ID
+const API_BASE = "https://esports-backend-2n67.onrender.com";
 const matchId = "FF-SQUAD-1";
 
 /* ===============================
@@ -144,7 +144,7 @@ const matchId = "FF-SQUAD-1";
 async function loadSlots() {
 
   try {
-    const res = await fetch("/api/match-slots/" + matchId);
+    const res = await fetch(`${API_BASE}/api/match-slots/${matchId}`);
     const data = await res.json();
 
     const slotInfo = document.getElementById("slotInfo");
@@ -166,13 +166,12 @@ async function loadSlots() {
     }
 
   } catch (err) {
-    console.log(err);
+    console.log("Slot load error:", err);
   }
 }
 
 document.addEventListener("DOMContentLoaded", loadSlots);
 setInterval(loadSlots, 5000);
-
 
 /* ===============================
    SUBMIT REGISTRATION
@@ -208,7 +207,7 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
 
     try {
 
-      const res = await fetch("/api/join-match", {
+      const res = await fetch(`${API_BASE}/api/join-match`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -235,7 +234,7 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
       window.location.href = "player-dashboard.html";
 
     } catch (err) {
-      console.error(err);
+      console.error("Join-match error:", err);
       alert("Something went wrong");
     }
   };
@@ -243,4 +242,5 @@ document.getElementById("regForm").addEventListener("submit", async function (e)
 
 </script>
 </body>
+
 </html>
