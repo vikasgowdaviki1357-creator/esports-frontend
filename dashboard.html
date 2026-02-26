@@ -12,11 +12,12 @@
 <div id="matches"></div>
 
 <script>
+const API_BASE = "https://esports-backend-2n67.onrender.com";
+
 document.addEventListener("DOMContentLoaded", async () => {
 
   const token = localStorage.getItem("token");
 
-  // If not logged in
   if (!token) {
     window.location.href = "login.html";
     return;
@@ -27,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
 
-    const response = await fetch("/api/my-registrations", {
+    const response = await fetch(`${API_BASE}/api/my-registrations`, {
       headers: {
         "Authorization": "Bearer " + token
       }
@@ -72,6 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
