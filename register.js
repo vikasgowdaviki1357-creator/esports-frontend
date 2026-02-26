@@ -8,7 +8,7 @@ form.addEventListener("submit", async (e) => {
   const password = document.getElementById("rpassword").value;
 
   try {
-    const res = await fetch("/api/register", {
+    const res = await fetch("https://esports-backend-2n67.onrender.com/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -21,10 +21,10 @@ form.addEventListener("submit", async (e) => {
     alert(data.message);
 
     if (res.ok) {
-      window.location.href = "login.html"; // ✅ IMPORTANT
+      window.location.href = "login.html";
     }
 
   } catch (error) {
     alert("Error connecting to server");
   }
-}); 
+});
