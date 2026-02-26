@@ -533,6 +533,22 @@ nav a:hover { color:#fff; text-decoration:underline; }
   border-radius: 10px;
   color: white;
 }
+@media (max-width: 768px) {
+
+  .main-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .registration-card {
+    width: 95%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+}
+
 
 
 
