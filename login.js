@@ -9,28 +9,26 @@ form.addEventListener("submit", async (e) => {
   try {
     const res = await fetch("https://esports-backend-2n67.onrender.com/api/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
     });
 
-    let data;
-
-    try {
-      data = await res.json();  // Safe JSON parse
-    } catch {
-      return alert("Server temporarily unavailable. Try again in 5 seconds.");
-    }
+    const data = await res.json();
 
     if (!res.ok) {
-      return alert(data.message || "Invalid login");
+      return alert(data.message);
     }
 
-    // Save token
     localStorage.setItem("token", data.token);
     alert("Login successful!");
     window.location = "index.html";
 
   } catch (err) {
-    alert("Network error. Please try again.");
+    alert("Server error");
   }
 });
