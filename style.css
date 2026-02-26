@@ -533,15 +533,3 @@ nav a:hover { color:#fff; text-decoration:underline; }
   border-radius: 10px;
   color: white;
 }
-@media (max-width: 768px) {
-
-  .hero {
-    height: auto;
-    padding: 120px 20px 60px;
-  }
-
-  .hero .content {
-    text-align: center;
-  }
-
-}
