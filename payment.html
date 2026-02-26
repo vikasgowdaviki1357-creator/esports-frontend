@@ -1,41 +1,79 @@
-<script type="module">
-import { db, storage, collection, getDocs, ref, uploadBytes, getDownloadURL, updateDoc, doc } from "./firebase.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RV Esports Arena</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-window.submitProof = async function () {
-  const file = document.getElementById("ss").files[0];
+<body>
 
-  if (!file) {
-    alert("Please upload a screenshot!");
-    return;
+<header>
+  <h1 class="logo">RV Esports Arena</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="tournaments.html">Tournaments</a>
+    <a href="dashboard.html">Dashboard</a>
+
+    <a href="login.html" id="loginLink">Login</a>
+    <a href="#" id="logoutLink" style="display:none;">Logout</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="content">
+    <h2 class="title">Join & Win Esports Tournaments</h2>
+    <p class="subtitle">FREE FIRE • BGMI</p>
+
+    <div class="hero-buttons">
+      <a class="btn-primary" href="tournaments.html">View Tournaments</a>
+      <a class="btn-outline" href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</section>
+
+<section class="tournaments-home">
+  <h2 class="section-title">Upcoming Tournaments</h2>
+
+  <div class="tournament-container">
+    <div class="tournament-card">
+      <h3>Free Fire Clash Squad - 4v4</h3>
+      <p class="meta">FREE FIRE SQUAD • ₹100 / Squad</p>
+    </div>
+
+    <div class="tournament-card">
+      <h3>BGMI Battlegrounds - Duo</h3>
+      <p class="meta">BGMI • ₹60</p>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    loginLink.style.display = "none";
+    logoutLink.style.display = "inline";
+  } else {
+    loginLink.style.display = "inline";
+    logoutLink.style.display = "none";
   }
 
-  // 1️⃣ Fetch the last registration (the one just created)
-  const snap = await getDocs(collection(db, "registrations"));
-  let lastDoc = null;
-
-  snap.forEach(d => lastDoc = d);
-
-  if (!lastDoc) {
-    alert("No registration found!");
-    return;
-  }
-
-  // 2️⃣ Upload screenshot to Firebase Storage
-  const storageRef = ref(storage, `payments/${lastDoc.id}.jpg`);
-  await uploadBytes(storageRef, file);
-
-  const url = await getDownloadURL(storageRef);
-
-  // 3️⃣ Update Firestore entry
-  await updateDoc(doc(db, "registrations", lastDoc.id), {
-    screenshot: url,
-    payment: "submitted"
+  logoutLink.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    alert("Logged out successfully");
+    window.location.href = "index.html";
   });
 
-  alert("Screenshot Uploaded Successfully!");
-  window.location.href = "dashboard.html";
-}
+});
 </script>
 
-
-
+</body>
+</html>
