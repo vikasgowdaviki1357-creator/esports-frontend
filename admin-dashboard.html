@@ -11,6 +11,8 @@
 <div id="admin-list"></div>
 
 <script>
+const API_BASE = "https://esports-backend-2n67.onrender.com";
+
 document.addEventListener("DOMContentLoaded", async () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -24,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const list = document.getElementById("admin-list");
 
   try {
-    const res = await fetch("/api/admin/registrations", {
+    const res = await fetch(`${API_BASE}/api/admin/registrations`, {
       headers: {
         "Authorization": "Bearer " + token
       }
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       list.innerHTML += `
         <div style="margin-bottom:25px;padding:20px;border:1px solid #333;border-radius:12px">
 
-          <h3>Match ID: ${reg.match}</h3>
+          <h3>Match ID: ${reg.match?.matchId || reg.match || "Unknown"}</h3>
 
           <p><b>Player Name:</b> ${reg.player?.name || "N/A"}</p>
           <p><b>Email:</b> ${reg.player?.email || "N/A"}</p>
@@ -67,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
           ${
-            (reg.status || "pending") === "pending"
+            reg.status === "pending"
             ? `
               <hr>
               <input placeholder="Match Date" id="date-${reg._id}">
@@ -110,7 +112,7 @@ async function approve(id) {
     return;
   }
 
-  await fetch("/api/admin/approve/" + id, {
+  await fetch(`${API_BASE}/api/admin/approve/` + id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
