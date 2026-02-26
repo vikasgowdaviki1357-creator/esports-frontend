@@ -548,6 +548,30 @@ nav a:hover { color:#fff; text-decoration:underline; }
   }
 
 }
+@media (max-width: 768px) {
+
+  body {
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 95%;
+    max-width: 420px;
+    margin: 20px auto;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-grid input {
+    width: 100%;
+  }
+
+}
+
 
 
 
