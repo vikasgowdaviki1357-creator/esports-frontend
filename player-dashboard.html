@@ -10,6 +10,9 @@
 <div id="status"></div>
 
 <script>
+
+const API_BASE = "https://esports-backend-2n67.onrender.com";
+
 document.addEventListener("DOMContentLoaded", async function() {
 
   const token = localStorage.getItem("token");
@@ -25,22 +28,23 @@ document.addEventListener("DOMContentLoaded", async function() {
 
   try {
 
-    const res = await fetch("/api/my-registrations", {
+    const res = await fetch(`${API_BASE}/api/my-registrations`, {
       headers: {
         "Authorization": "Bearer " + token
       }
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to load data");
-    }
-
     const data = await res.json();
+
+    if (!res.ok) {
+      container.innerHTML = data.message || "Error loading tournament status";
+      return;
+    }
 
     container.innerHTML = "";
 
     if (!data || data.length === 0) {
-      container.innerHTML = "<p>No tournament registrations</p>";
+      container.innerHTML = "<p>No tournament registrations found</p>";
       return;
     }
 
@@ -50,7 +54,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
       container.innerHTML += `
         <div class="card">
-          <h3>${match.game || "Match"}</h3>
+          <h3>${match.game || match.matchId || "Match Details"}</h3>
+
           <p><strong>Status:</strong> ${r.status}</p>
           <p>📅 ${r.matchDate || "Date not announced"}</p>
           <p>⏰ ${r.matchTime || "Time not announced"}</p>
@@ -69,4 +74,5 @@ document.addEventListener("DOMContentLoaded", async function() {
 </script>
 
 </body>
+
 </html>
