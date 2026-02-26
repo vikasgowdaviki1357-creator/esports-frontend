@@ -39,9 +39,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ===============================
-  // AUTH CHECK
-  // ===============================
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -50,9 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ===============================
-  // STATIC TOURNAMENT DATA
-  // ===============================
   const tournaments = [
     {
       id: 'freefire-squad-1',
@@ -81,11 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const container = document.getElementById("tournaments-list");
 
-  // ===============================
-  // CREATE CARD
-  // ===============================
   function createCard(t) {
-
     const card = document.createElement("article");
     card.className = "card tournament-card";
 
@@ -111,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    // More Info Click
     card.querySelector(".info-btn").addEventListener("click", () => {
       alert(
         `${t.title}\n\n` +
@@ -126,14 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
-  // ===============================
-  // RENDER TOURNAMENTS
-  // ===============================
   function renderTournaments() {
     container.innerHTML = "";
-    tournaments.forEach(t => {
-      container.appendChild(createCard(t));
-    });
+    tournaments.forEach(t => container.appendChild(createCard(t)));
   }
 
   renderTournaments();
@@ -142,5 +126,4 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 </body>
-
 </html>
