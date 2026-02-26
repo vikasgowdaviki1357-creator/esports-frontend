@@ -7,21 +7,19 @@ form.addEventListener("submit", async (e) => {
   const password = document.getElementById("password").value;
 
   try {
-    const res = await fetch("http://localhost:5000/api/login", {
+    const res = await fetch("https://esports-backend-2n67.onrender.com/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        email,
-        password
-      })
+      body: JSON.stringify({ email, password })
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      return alert(data.message);
+      alert(data.message || "Invalid credentials");
+      return;
     }
 
     // Save token
@@ -29,9 +27,10 @@ form.addEventListener("submit", async (e) => {
 
     alert("Login successful!");
 
-    window.location= "index.html";
+    // Redirect to home page
+    window.location = "index.html";
 
   } catch (error) {
-    alert("Server error");
+    alert("Server error. Please try again.");
   }
 });
