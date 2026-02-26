@@ -1,78 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Tournament Status</title>
+  <title>Player Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
 <h2>🔥 My Tournament Status</h2>
-<div id="status"></div>
+
+<div id="matches"></div>
 
 <script>
-
 const API_BASE = "https://esports-backend-2n67.onrender.com";
 
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener("DOMContentLoaded", async () => {
 
   const token = localStorage.getItem("token");
 
+  // If not logged in
   if (!token) {
-    alert("Please login first");
     window.location.href = "login.html";
     return;
   }
 
-  const container = document.getElementById("status");
-  container.innerHTML = "<p>Loading...</p>";
+  const container = document.getElementById("matches");
+  container.innerHTML = "<p>Loading your matches...</p>";
 
   try {
 
-    const res = await fetch(`${API_BASE}/api/my-registrations`, {
+    const response = await fetch(`${API_BASE}/api/my-registrations`, {
       headers: {
         "Authorization": "Bearer " + token
       }
     });
 
-    const data = await res.json();
+    const data = await response.json();
 
-    if (!res.ok) {
-      container.innerHTML = data.message || "Error loading tournament status";
+    if (!response.ok) {
+      container.innerHTML = data.message || 
+        "❌ Error loading matches. Please try again.";
       return;
     }
 
     container.innerHTML = "";
 
     if (!data || data.length === 0) {
-      container.innerHTML = "<p>No tournament registrations found</p>";
+      container.innerHTML = "<p>No matches joined yet.</p>";
       return;
     }
 
-    data.forEach(r => {
+    data.forEach(reg => {
 
-      const match = r.match || {};
+      const match = reg.match || {};
 
-      container.innerHTML += `
-        <div class="card">
-          <h3>${match.game || match.matchId || "Match Details"}</h3>
+      const card = document.createElement("div");
+      card.className = "card";
 
-          <p><strong>Status:</strong> ${r.status}</p>
-          <p>📅 ${r.matchDate || "Date not announced"}</p>
-          <p>⏰ ${r.matchTime || "Time not announced"}</p>
-          <p><strong>Room ID:</strong> ${r.roomID || "Not assigned yet"}</p>
-          <p><strong>Password:</strong> ${r.roomPassword || "Not assigned yet"}</p>
-        </div>
+      card.innerHTML = `
+        <h3>${match.game || match.matchId || "Match"}</h3>
+
+        <p><strong>Status:</strong> ${reg.status}</p>
+        <p>📅 ${reg.matchDate || "Date not announced"}</p>
+        <p>⏰ ${reg.matchTime || "Time not announced"}</p>
+        <p><strong>Room ID:</strong> ${reg.roomID || "Not assigned yet"}</p>
+        <p><strong>Password:</strong> ${reg.roomPassword || "Not assigned yet"}</p>
       `;
+
+      container.appendChild(card);
     });
 
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = "<p>Error loading tournament status</p>";
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    container.innerHTML = "<p>❌ Error loading matches. Please try again.</p>";
   }
 
 });
 </script>
 
 </body>
-
 </html>
